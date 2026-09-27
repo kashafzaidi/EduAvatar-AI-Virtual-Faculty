@@ -88,9 +88,9 @@ If you have any doubt, you can ask the AI faculty.
 """
 
 
-# ================================
+
 # GEMINI CLIENT
-# ================================
+
 
 api_key = os.getenv("GEMINI_API_KEY")
 
@@ -108,9 +108,9 @@ os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-# =====================================================
+
 # PAGE CONFIG
-# =====================================================
+
 
 st.set_page_config(
     page_title="EduAvatar",
@@ -119,17 +119,17 @@ st.set_page_config(
 )
 
 
-# =====================================================
+
 # SESSION STATE
-# =====================================================
+
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 
-# =====================================================
+
 # CUSTOM CSS
-# =====================================================
+
 
 st.markdown(
     """
@@ -411,9 +411,9 @@ if not st.session_state.logged_in:
     
 
 
-    # =================================================
+ 
     # LOGIN
-    # =================================================
+  
 
     if option == "Login":
 
@@ -447,9 +447,9 @@ if not st.session_state.logged_in:
                 )
 
 
-    # =================================================
+  
     # SIGNUP
-    # =================================================
+  
 
     else:
 
@@ -498,15 +498,15 @@ if not st.session_state.logged_in:
 
 
     
-    # =====================================================
+   
 # DASHBOARD
-# =====================================================
+
 
 else:
 
-    # =================================================
+    
     # SIDEBAR
-    # =================================================
+   
 
     with st.sidebar:
 
@@ -544,9 +544,9 @@ else:
             st.rerun()
 
 
-    # =================================================
+  
     # HOME
-    # =================================================
+  
 
     if menu == "🏠 Home":
 
@@ -599,9 +599,9 @@ else:
             )
 
 
-    # =================================================
+   
     # MY PDFs - ONLY PDF PROCESSING / KNOWLEDGE BASE
-    # =================================================
+  
 
     elif menu == "📚 My PDFs":
 
@@ -661,9 +661,9 @@ else:
 
                 st.success("📖 PDF text extracted successfully!")
 
-                # -----------------------------
+              
                 # TEXT CHUNKING
-                # -----------------------------
+               
 
                 chunk_size = 1000
                 overlap = 200
@@ -683,9 +683,9 @@ else:
                 st.session_state.chunks = chunks
                 st.success(f"🧩 Created {len(chunks)} text chunks.")
 
-                # -----------------------------
+                
                 # GEMINI EMBEDDINGS
-                # -----------------------------
+                
 
                 with st.spinner("🧠 Creating embeddings..."):
 
@@ -702,9 +702,9 @@ else:
                 st.session_state.embeddings = embeddings
                 st.success("✅ Embeddings created successfully!")
 
-                # -----------------------------
+              
                 # FAISS VECTOR DATABASE
-                # -----------------------------
+                
 
                 dimension = embeddings.shape[1]
                 index = faiss.IndexFlatL2(dimension)
@@ -716,9 +716,9 @@ else:
                     f"🗂️ FAISS database created with {index.ntotal} vectors."
                 )
 
-                # -----------------------------
+                
                 # IDENTIFY MAIN TOPICS
-                # -----------------------------
+               
 
                 with st.spinner("👨‍🏫 Faculty is studying your PDF..."):
 
@@ -822,13 +822,9 @@ Study Material:
                 st.info(st.session_state.topics)
 
 
-    # =================================================
+  
     # AI FACULTY - TOPIC-WISE TEACHING
-    # =================================================
-
-        # =================================================
-    # AI FACULTY - TOPIC-WISE TEACHING
-    # =================================================
+   
 
     elif menu == "👨‍🏫 AI Faculty":
 
@@ -844,21 +840,14 @@ Study Material:
             st.stop()
 
         st.markdown("## 👨‍🏫 AI Virtual Faculty")
-        # ==========================================
-# AI FACULTY AVATAR
-# ==========================================
-# ==========================================
-# AI FACULTY AVATAR
-# ==========================================
-
-        # ==========================================
+        
 # FULL LECTURE HALL + HUMAN FACULTY
-# ==========================================
+
 
         
-        # ---------------------------------------------
+       
         # SELECTED LANGUAGE
-        # ---------------------------------------------
+       
 
         selected_language = st.session_state.get(
             "selected_language",
@@ -869,9 +858,8 @@ Study Material:
             f"🌐 Faculty Language: **{selected_language}**"
         )
 
-        # ---------------------------------------------
-        # LESSON PLAN
-        # ---------------------------------------------
+       # LESSON PLAN
+      
 
         st.markdown("### 📚 Today's Lesson Plan")
 
@@ -887,9 +875,9 @@ Study Material:
             st.warning("No topics were detected in the PDF.")
             st.stop()
 
-        # ---------------------------------------------
+     
         # CURRENT TOPIC
-        # ---------------------------------------------
+      
 
         current_index = (
             st.session_state.get("current_topic", 0)
@@ -1677,9 +1665,9 @@ Study Material:
             height=650
         )
 
-        # ---------------------------------------------
+       
         # FIND LOCAL PDF CONTENT
-        # ---------------------------------------------
+       
 
         chunks = st.session_state.chunks
 
@@ -1726,9 +1714,9 @@ Study Material:
             relevant_chunks
         )
 
-        # ---------------------------------------------
+       
         # LOCAL FACULTY EXPLANATION
-        # ---------------------------------------------
+       
 
         topic_key =(f"local_lesson_{current_index}_{selected_language}")
 
@@ -1869,21 +1857,17 @@ Uske baad step-by-step solve karo.
 
             st.session_state[topic_key] = lesson
 
-        # ---------------------------------------------
+      
         # SHOW LESSON
-        # ---------------------------------------------
+      
 
         st.markdown(
             st.session_state[topic_key]
         )
 
-        # ---------------------------------------------
+       
         # VOICE
-        # ---------------------------------------------
-
-               # ---------------------------------------------
-        # VOICE
-        # ---------------------------------------------
+       
 
         st.markdown("---")
 
@@ -2365,9 +2349,9 @@ Uske baad step-by-step solve karo.
 
 
 
-                                # -----------------------------
+                               
                 # TEST FACULTY VOICE
-                # -----------------------------
+                
 
                 voice_language = {
                     "Hindi": "hi-IN",
@@ -3177,9 +3161,9 @@ RULES:
 
             answers = []
 
-            # -----------------------------------------
+          
             # QUESTIONS
-            # -----------------------------------------
+          
 
             for i, q in enumerate(
                 st.session_state.quiz_questions
@@ -3202,9 +3186,9 @@ RULES:
                     )
                 )
 
-            # -----------------------------------------
+        
             # SUBMIT QUIZ
-            # -----------------------------------------
+          
 
             if st.button(
                 "✅ Submit Quiz",
@@ -3232,9 +3216,9 @@ RULES:
                     True
                 )
 
-                # -------------------------------------
+               
                 # SAVE QUIZ HISTORY
-                # -------------------------------------
+               
 
                 history = st.session_state.get(
                     "quiz_history",
@@ -3258,9 +3242,9 @@ RULES:
                     history
                 )
 
-            # -----------------------------------------
+          
             # SHOW RESULT
-            # -----------------------------------------
+          
 
             if st.session_state.get(
                 "quiz_submitted"
@@ -3311,9 +3295,9 @@ RULES:
                         "and try the quiz again."
                     )
 
-                # -------------------------------------
+               
                 # ANSWER REVIEW
-                # -------------------------------------
+                
 
                 st.markdown(
                     "### 📌 Answer Review"
@@ -3342,17 +3326,9 @@ RULES:
                             "concept in your PDF."
                         )
                     )
-    # =================================================
-    # ANALYTICS
-    # =================================================
-
-   # =================================================
+  
 # ANALYTICS + MACHINE LEARNING
-# =================================================
 
-    # =================================================
-# ANALYTICS + MACHINE LEARNING
-# =================================================
 
     elif menu == "📊 Analytics":
 
@@ -3368,9 +3344,9 @@ RULES:
 
         else:
 
-            # ==========================================
+            
             # BASIC CALCULATIONS
-            # ==========================================
+        
 
             total_quizzes = len(history)
 
@@ -3389,9 +3365,9 @@ RULES:
             ) * 100
 
 
-            # ==========================================
+        
             # TOP CARDS
-            # ==========================================
+           
 
             col1, col2, col3 = st.columns(3)
 
@@ -3414,9 +3390,9 @@ RULES:
                 )
 
 
-            # ==========================================
+            
             # PREPARE TOPIC DATA
-            # ==========================================
+           
 
             topic_data = {}
 
@@ -3437,9 +3413,9 @@ RULES:
                 topic_data[topic]["total"] += total
 
 
-            # ==========================================
+          
             # TOPIC PERFORMANCE GRAPH
-            # ==========================================
+           
 
             st.markdown("---")
 
@@ -3509,9 +3485,9 @@ RULES:
             plt.close(fig)
 
 
-            # ==========================================
+          
             # SCORE TABLE
-            # ==========================================
+        
 
             st.markdown(
                 "### 📋 Detailed Performance"
@@ -3541,9 +3517,9 @@ RULES:
                     )
 
 
-            # ==========================================
+          
             # QUIZ PROGRESS GRAPH
-            # ==========================================
+           
 
             st.markdown("---")
 
@@ -3615,9 +3591,9 @@ RULES:
             st.pyplot(fig)
             plt.close(fig)
 
-            # ==========================================
+           
             # RANDOM FOREST ML
-            # ==========================================
+            
 
             st.markdown("---")
 
@@ -3664,9 +3640,9 @@ RULES:
             model.fit(X, y)
 
 
-            # ==========================================
+          
             # ML PREDICTION
-            # ==========================================
+           
 
             st.markdown(
                 "#### 🔍 Topic Prediction"
@@ -3707,10 +3683,8 @@ RULES:
                     weak_topics.append(topic)
 
 
-            # ==========================================
+          
             # RECOMMENDATION
-            # ==========================================
-
             st.markdown("---")
 
             st.markdown(
@@ -3741,13 +3715,12 @@ RULES:
                     "🌟 No topic is currently marked "
                     "for revision."
                 )
-    # =================================================
-    # SETTINGS
-    # =================================================
+    
+   
 
-      # =================================================
+     
     # SETTINGS
-    # =================================================
+   
     elif menu == "⚙️ Settings":
 
         st.markdown("## ⚙️ Settings")
