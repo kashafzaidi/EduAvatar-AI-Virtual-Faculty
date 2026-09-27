@@ -8,6 +8,23 @@ from google import genai
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 import base64
+
+def get_secret(name):
+    # Local development: read from environment variables.
+    value = os.getenv(name)
+    if value:
+        return value
+
+    # Streamlit deployment: read from st.secrets.
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return value
+    except Exception:
+        pass
+
+    return None
+
 def create_local_topics(chunks):
     """
     Gemini unavailable hone par PDF chunks se
@@ -88,11 +105,11 @@ If you have any doubt, you can ask the AI faculty.
 """
 
 
-
+# ================================
 # GEMINI CLIENT
+# ================================
 
-
-api_key = os.getenv("GEMINI_API_KEY")
+api_key = get_secret("GEMINI_API_KEY")
 
 if not api_key:
     st.error("Gemini API key not found.")
@@ -108,9 +125,9 @@ os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-
+# =====================================================
 # PAGE CONFIG
-
+# =====================================================
 
 st.set_page_config(
     page_title="EduAvatar",
@@ -119,17 +136,17 @@ st.set_page_config(
 )
 
 
-
+# =====================================================
 # SESSION STATE
-
+# =====================================================
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 
-
+# =====================================================
 # CUSTOM CSS
-
+# =====================================================
 
 st.markdown(
     """
@@ -411,9 +428,9 @@ if not st.session_state.logged_in:
     
 
 
- 
+    # =================================================
     # LOGIN
-  
+    # =================================================
 
     if option == "Login":
 
@@ -447,9 +464,9 @@ if not st.session_state.logged_in:
                 )
 
 
-  
+    # =================================================
     # SIGNUP
-  
+    # =================================================
 
     else:
 
@@ -498,15 +515,15 @@ if not st.session_state.logged_in:
 
 
     
-   
+    # =====================================================
 # DASHBOARD
-
+# =====================================================
 
 else:
 
-    
+    # =================================================
     # SIDEBAR
-   
+    # =================================================
 
     with st.sidebar:
 
@@ -544,9 +561,9 @@ else:
             st.rerun()
 
 
-  
+    # =================================================
     # HOME
-  
+    # =================================================
 
     if menu == "🏠 Home":
 
@@ -599,9 +616,9 @@ else:
             )
 
 
-   
+    # =================================================
     # MY PDFs - ONLY PDF PROCESSING / KNOWLEDGE BASE
-  
+    # =================================================
 
     elif menu == "📚 My PDFs":
 
@@ -661,9 +678,9 @@ else:
 
                 st.success("📖 PDF text extracted successfully!")
 
-              
+                # -----------------------------
                 # TEXT CHUNKING
-               
+                # -----------------------------
 
                 chunk_size = 1000
                 overlap = 200
@@ -683,9 +700,9 @@ else:
                 st.session_state.chunks = chunks
                 st.success(f"🧩 Created {len(chunks)} text chunks.")
 
-                
+                # -----------------------------
                 # GEMINI EMBEDDINGS
-                
+                # -----------------------------
 
                 with st.spinner("🧠 Creating embeddings..."):
 
@@ -702,9 +719,9 @@ else:
                 st.session_state.embeddings = embeddings
                 st.success("✅ Embeddings created successfully!")
 
-              
+                # -----------------------------
                 # FAISS VECTOR DATABASE
-                
+                # -----------------------------
 
                 dimension = embeddings.shape[1]
                 index = faiss.IndexFlatL2(dimension)
@@ -716,9 +733,9 @@ else:
                     f"🗂️ FAISS database created with {index.ntotal} vectors."
                 )
 
-                
+                # -----------------------------
                 # IDENTIFY MAIN TOPICS
-               
+                # -----------------------------
 
                 with st.spinner("👨‍🏫 Faculty is studying your PDF..."):
 
@@ -740,7 +757,7 @@ Study Material:
 
                     try:
                         topic_response = client.models.generate_content(
-                            model="gemini-3.6-flash",
+                            model="gemini-3.8-flash",
                             contents=topic_prompt
                         )
 
@@ -793,7 +810,7 @@ Study Material:
 
                     try:
                         topic_response = client.models.generate_content(
-                            model="gemini-3.6-flash",
+                            model="gemini-3.8-flash",
                             contents=topic_prompt
                         )
                         st.session_state.topics = topic_response.text
@@ -822,9 +839,13 @@ Study Material:
                 st.info(st.session_state.topics)
 
 
-  
+    # =================================================
     # AI FACULTY - TOPIC-WISE TEACHING
-   
+    # =================================================
+
+        # =================================================
+    # AI FACULTY - TOPIC-WISE TEACHING
+    # =================================================
 
     elif menu == "👨‍🏫 AI Faculty":
 
@@ -840,14 +861,21 @@ Study Material:
             st.stop()
 
         st.markdown("## 👨‍🏫 AI Virtual Faculty")
-        
+        # ==========================================
+# AI FACULTY AVATAR
+# ==========================================
+# ==========================================
+# AI FACULTY AVATAR
+# ==========================================
+
+        # ==========================================
 # FULL LECTURE HALL + HUMAN FACULTY
-
+# ==========================================
 
         
-       
+        # ---------------------------------------------
         # SELECTED LANGUAGE
-       
+        # ---------------------------------------------
 
         selected_language = st.session_state.get(
             "selected_language",
@@ -858,8 +886,9 @@ Study Material:
             f"🌐 Faculty Language: **{selected_language}**"
         )
 
-       # LESSON PLAN
-      
+        # ---------------------------------------------
+        # LESSON PLAN
+        # ---------------------------------------------
 
         st.markdown("### 📚 Today's Lesson Plan")
 
@@ -875,9 +904,9 @@ Study Material:
             st.warning("No topics were detected in the PDF.")
             st.stop()
 
-     
+        # ---------------------------------------------
         # CURRENT TOPIC
-      
+        # ---------------------------------------------
 
         current_index = (
             st.session_state.get("current_topic", 0)
@@ -1665,9 +1694,9 @@ Study Material:
             height=650
         )
 
-       
+        # ---------------------------------------------
         # FIND LOCAL PDF CONTENT
-       
+        # ---------------------------------------------
 
         chunks = st.session_state.chunks
 
@@ -1714,9 +1743,9 @@ Study Material:
             relevant_chunks
         )
 
-       
+        # ---------------------------------------------
         # LOCAL FACULTY EXPLANATION
-       
+        # ---------------------------------------------
 
         topic_key =(f"local_lesson_{current_index}_{selected_language}")
 
@@ -1857,17 +1886,21 @@ Uske baad step-by-step solve karo.
 
             st.session_state[topic_key] = lesson
 
-      
+        # ---------------------------------------------
         # SHOW LESSON
-      
+        # ---------------------------------------------
 
         st.markdown(
             st.session_state[topic_key]
         )
 
-       
+        # ---------------------------------------------
         # VOICE
-       
+        # ---------------------------------------------
+
+               # ---------------------------------------------
+        # VOICE
+        # ---------------------------------------------
 
         st.markdown("---")
 
@@ -2092,36 +2125,67 @@ Uske baad step-by-step solve karo.
                         )
 
                 # ---------------------------------
-                # SHOW FACULTY RESPONSE
+                # GENERATE FACULTY RESPONSE
                 # ---------------------------------
 
                 st.markdown("### 👨‍🏫 Faculty")
 
                 if relevant_chunks:
 
-                    st.write(
-                        "Maine aapke question ke liye "
-                        "uploaded PDF se ye relevant information find ki:"
-                    )
+                    question_context = "\n\n".join(relevant_chunks)
 
-                    for i, chunk in enumerate(
-                        relevant_chunks,
-                        start=1
-                    ):
+                    answer_prompt = f"""
+You are EduAvatar, an AI college faculty member.
 
-                        with st.expander(
-                            f"📖 Relevant PDF Content {i}"
+Answer the student's question using ONLY the supplied PDF context.
+
+Student question:
+{question}
+
+PDF context:
+{question_context}
+
+Language:
+{selected_language}
+
+Rules:
+- Explain like a real teacher.
+- Keep the explanation simple and clear.
+- Do not invent facts that are not present in the PDF.
+- If the PDF does not contain enough information, clearly say that.
+- Answer the question directly.
+"""
+
+                    try:
+                        answer_response = client.models.generate_content(
+                            model="gemini-3.8-flash",
+                            contents=answer_prompt
+                        )
+
+                        faculty_answer = (answer_response.text or "").strip()
+
+                        if faculty_answer:
+                            st.success(faculty_answer)
+                        else:
+                            st.warning(
+                                "⚠️ Faculty could not generate an answer."
+                            )
+
+                    except Exception as e:
+                        st.error(
+                            "⚠️ Faculty answer generate nahi ho paya."
+                        )
+                        st.caption(f"Technical detail: {e}")
+
+                    with st.expander("📖 View retrieved PDF context"):
+                        for i, chunk in enumerate(
+                            relevant_chunks,
+                            start=1
                         ):
-
+                            st.markdown(f"**Relevant PDF Content {i}**")
                             st.write(chunk)
 
-                    st.success(
-                        "💡 Ye answer directly aapke uploaded "
-                        "PDF ke relevant content se retrieve hua hai."
-                    )
-
                 else:
-
                     st.warning(
                         "⚠️ Is question ke liye uploaded PDF "
                         "mein relevant information nahi mili."
@@ -2218,7 +2282,7 @@ Uske baad step-by-step solve karo.
             use_container_width=True
         ):
 
-            api_key = os.getenv("DID_API_KEY")
+            api_key = get_secret("DID_API_KEY")
 
             if not api_key:
 
@@ -2318,7 +2382,7 @@ Uske baad step-by-step solve karo.
 
                     # PRIMARY: GEMINI
                     lecture_response = client.models.generate_content(
-                        model="gemini-3.6-flash",
+                        model="gemini-3.8-flash",
                         contents=faculty_prompt
                     )
 
@@ -2349,9 +2413,9 @@ Uske baad step-by-step solve karo.
 
 
 
-                               
+                                # -----------------------------
                 # TEST FACULTY VOICE
-                
+                # -----------------------------
 
                 voice_language = {
                     "Hindi": "hi-IN",
@@ -2842,7 +2906,7 @@ RULES:
 
                     quiz_response = (
                         client.models.generate_content(
-                            model="gemini-3.6-flash",
+                            model="gemini-3.8-flash",
                             contents=quiz_prompt
                         )
                     )
@@ -3161,9 +3225,9 @@ RULES:
 
             answers = []
 
-          
+            # -----------------------------------------
             # QUESTIONS
-          
+            # -----------------------------------------
 
             for i, q in enumerate(
                 st.session_state.quiz_questions
@@ -3186,9 +3250,9 @@ RULES:
                     )
                 )
 
-        
+            # -----------------------------------------
             # SUBMIT QUIZ
-          
+            # -----------------------------------------
 
             if st.button(
                 "✅ Submit Quiz",
@@ -3216,9 +3280,9 @@ RULES:
                     True
                 )
 
-               
+                # -------------------------------------
                 # SAVE QUIZ HISTORY
-               
+                # -------------------------------------
 
                 history = st.session_state.get(
                     "quiz_history",
@@ -3242,9 +3306,9 @@ RULES:
                     history
                 )
 
-          
+            # -----------------------------------------
             # SHOW RESULT
-          
+            # -----------------------------------------
 
             if st.session_state.get(
                 "quiz_submitted"
@@ -3295,9 +3359,9 @@ RULES:
                         "and try the quiz again."
                     )
 
-               
+                # -------------------------------------
                 # ANSWER REVIEW
-                
+                # -------------------------------------
 
                 st.markdown(
                     "### 📌 Answer Review"
@@ -3326,9 +3390,17 @@ RULES:
                             "concept in your PDF."
                         )
                     )
-  
-# ANALYTICS + MACHINE LEARNING
+    # =================================================
+    # ANALYTICS
+    # =================================================
 
+   # =================================================
+# ANALYTICS + MACHINE LEARNING
+# =================================================
+
+    # =================================================
+# ANALYTICS + MACHINE LEARNING
+# =================================================
 
     elif menu == "📊 Analytics":
 
@@ -3344,9 +3416,9 @@ RULES:
 
         else:
 
-            
+            # ==========================================
             # BASIC CALCULATIONS
-        
+            # ==========================================
 
             total_quizzes = len(history)
 
@@ -3365,9 +3437,9 @@ RULES:
             ) * 100
 
 
-        
+            # ==========================================
             # TOP CARDS
-           
+            # ==========================================
 
             col1, col2, col3 = st.columns(3)
 
@@ -3390,9 +3462,9 @@ RULES:
                 )
 
 
-            
+            # ==========================================
             # PREPARE TOPIC DATA
-           
+            # ==========================================
 
             topic_data = {}
 
@@ -3413,9 +3485,9 @@ RULES:
                 topic_data[topic]["total"] += total
 
 
-          
+            # ==========================================
             # TOPIC PERFORMANCE GRAPH
-           
+            # ==========================================
 
             st.markdown("---")
 
@@ -3485,9 +3557,9 @@ RULES:
             plt.close(fig)
 
 
-          
+            # ==========================================
             # SCORE TABLE
-        
+            # ==========================================
 
             st.markdown(
                 "### 📋 Detailed Performance"
@@ -3517,9 +3589,9 @@ RULES:
                     )
 
 
-          
+            # ==========================================
             # QUIZ PROGRESS GRAPH
-           
+            # ==========================================
 
             st.markdown("---")
 
@@ -3591,9 +3663,9 @@ RULES:
             st.pyplot(fig)
             plt.close(fig)
 
-           
+            # ==========================================
             # RANDOM FOREST ML
-            
+            # ==========================================
 
             st.markdown("---")
 
@@ -3640,9 +3712,9 @@ RULES:
             model.fit(X, y)
 
 
-          
+            # ==========================================
             # ML PREDICTION
-           
+            # ==========================================
 
             st.markdown(
                 "#### 🔍 Topic Prediction"
@@ -3683,8 +3755,10 @@ RULES:
                     weak_topics.append(topic)
 
 
-          
+            # ==========================================
             # RECOMMENDATION
+            # ==========================================
+
             st.markdown("---")
 
             st.markdown(
@@ -3715,12 +3789,13 @@ RULES:
                     "🌟 No topic is currently marked "
                     "for revision."
                 )
-    
-   
-
-     
+    # =================================================
     # SETTINGS
-   
+    # =================================================
+
+      # =================================================
+    # SETTINGS
+    # =================================================
     elif menu == "⚙️ Settings":
 
         st.markdown("## ⚙️ Settings")
